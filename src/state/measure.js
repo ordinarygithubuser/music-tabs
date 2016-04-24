@@ -1,5 +1,5 @@
 import { Util } from 'mva';
-import { addBar } from '../constants';
+import { addBar, mulBar } from '../constants';
 import * as Actions from '../actions/measure';
 import { Measure, Note } from './model';
 
@@ -45,18 +45,8 @@ export default ({ init, on }) => {
         update(state);
     });
 
-    on(Actions.CreateNote, (data, state, update) => {
-        const { string, index } = data;
-        state.measure.notes[string][index] = Note(data, state.measure.bar.de);
-        update(state);
-    });
-
     on(Actions.UpdateNote, ({ note, value }, state, update) => {
-        if (value == '') {
-            state.measure.notes[note.string][note.index] = null;
-        } else {
-            state.measure.notes[note.string][note.index].value = value;
-        }
+        state.measure.notes[note.string][note.index].value = value;
         update(state);
     });
 
@@ -65,25 +55,44 @@ export default ({ init, on }) => {
     });
 
     on(Actions.JoinNote, ({ from, to }, state, update) => {
-        let joined = [];
+        const joined = [];
+
         state.measure.notes.map((string, sIndex) => {
-            string.map((note, index) => {
-                if (index == from) {
-                    const tmp = Object.assign({}, string[to]);
-                    joined[sIndex] = Object.assign(tmp, note);
-                    joined[sIndex].bar = addBar(note.bar, string[to].bar);
-                }
-            });
+            const temp = Object.assign({}, string[to]);
+            joined[sIndex] = Object.assign(temp, string[from]);
+            joined[sIndex].bar = addBar(string[from].bar, string[to].bar);
         });
-        state.measures = state.measures.notes.map((string, sIndex) => {
-            return string.map((note, index) => {
-                if (index < from) return note;
-                if (index == from) return joined[sIndex];
+
+        state.measure.notes.map((string, sIndex) => {
+            const last = string.filter(note => note.index > to).map(note => {
+                note.index -= 1;
+                return note;
             });
+            state.measure.notes[sIndex] = string.slice(0, from)
+                .concat([joined[sIndex]]).concat(last);
         });
+        update(state);
     });
 
-    on(Actions.SplitNote, (data, state, update) => {
-        state.measure.bar.de = state.measure.bar.de / 2;
+    on(Actions.SplitNote, ({ index }, state, update) => {
+        let clone = [];
+
+        state.measure.notes.map((string, sIndex) => {
+            const note = Object.assign({}, string[index]);
+            note.index += 1;
+            note.bar = mulBar(string[index].bar, { en: 1, de: 2 });
+            clone[sIndex] = note;
+        });
+        state.measure.notes.map((string, sIndex) => {
+            const orig = string.filter(note => note.index == index)[0];
+            const last = string.filter(note => note.index > index).map(note => {
+                note.index += 1;
+                return note;
+            });
+            orig.bar = mulBar(orig.bar, { en: 1, de: 2 });
+            state.measure.notes[sIndex] = string.slice(0, index)
+                .concat([orig, clone[sIndex]]).concat(last);
+        });
+        update(state);
     });
 };

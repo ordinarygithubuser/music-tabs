@@ -2,10 +2,14 @@ import { Util } from 'mva';
 
 let NID = 0;
 
-const createNotes = state => {
-    const tunes = state.instrument.tune.tones.split(' ');
-    return Util.Range(0, tunes.length).reduce((memo, tune, index) => {
-        memo[index] = [];
+export const createNotes = (strings, bars) => {
+    return Util.Range(0, strings).reduce((memo, string) => {
+        memo[string] = [];
+        bars.map((bar, index) => {
+            memo[string][index] = Note({
+                string, index, bar: bar, value: null
+            });
+        });
         return memo;
     }, []);
 };
@@ -19,17 +23,18 @@ export const Project = (data, state) => {
     return Object.assign(data, { id });
 };
 
-export const Note = (data, de) => {
-    data.id = NID++;
-    if (!data.bar) data.bar = Bar(1, de);
-    return data;
+export const Note = data => {
+    return Object.assign(data, { id: NID++ });
 };
 
 export const Measure = (data, state) => {
+    const strings = state.instrument.tune.tones.split(' ');
+    const bars = Util.Range(0, 7).map(i => Bar(1, 8));
+
     return Object.assign(data, {
         id: state.measures.length + 1,
         iid: state.instrument.id,
-        notes: createNotes(state),
+        notes: createNotes(strings.length, bars),
         tempo: 120,
         bar: Bar(8, 8)
     });

@@ -39,17 +39,15 @@ export default ({ init, on }) => {
         const buffer = state.measures.reduce((memo, m) => {
             if (m.iid !== state.instrument.id) return memo;
 
+            const strings = state.instrument.tune.tones.split(' ');
             const tones = [];
-            Util.Range(0, m.bar.en).map(index => {
-                let bar = { en: 1, de: m.bar.de };
-                const chord = state.instrument.tune.tones.split(' ').reduce((arr, string, sIndex) => {
+
+            Util.Range(0, m.notes[0].length).map(index => {
+                const bar = m.notes[0][index].bar;
+                const chord = strings.reduce((arr, string, sIndex) => {
                     const note = m.notes[sIndex][index];
                     const tone = createTone(context, note, string);
-                    if (tone) {
-                        if (note) bar = note.bar;
-                        return arr.concat([tone])
-                    }
-                    return arr;
+                    return tone ? arr.concat([tone]) : arr;
                 }, []);
 
                 const duration = 1 / (m.tempo / 60 * ((bar.de / 4) / bar.en));

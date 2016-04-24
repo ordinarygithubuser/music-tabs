@@ -25,7 +25,7 @@ export default class Measure extends React.Component {
         const active = measure == selected ? 'active' : '';
 
         const style = {
-            width: 45 + (30 * measure.bar.en),
+            width: 45 + (30 * measure.notes[0].length),
             height: 75 + (strings.length * 26)
         };
 
@@ -67,7 +67,7 @@ export default class Measure extends React.Component {
             </div>
             <div className="foot">
                 <div className="tempo" onClick={showTempoPopup}>{measure.tempo}</div>
-                <NoteBars measure={measure} strings={strings} />
+                <NoteBars measure={measure} />
             </div>
         </div>;
     };

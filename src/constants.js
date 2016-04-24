@@ -149,6 +149,13 @@ export const addBar = (b1, b2) => {
     return { en: b1.en + b2.en * factor, de: b1.de };
 };
 
+export const mulBar = (b1, b2) => {
+    const en = b1.en * b2.en;
+    const de = b1.de * b2.de;
+    const d = gcd(en, de);
+    return { en: en / d, de: de / d };
+};
+
 export const subBar = (b1, b2) => {
     const factor = b1.de / b2.de;
     return { en: b1.en - b2.en * factor, de: b1.de };
@@ -161,4 +168,9 @@ export const eqBar = (b1, b2) => {
 export const smBar = (b1, b2) => {
     const factor = b1.de / b2.de;
     return b1.en < b2.en * factor;
+};
+
+const gcd = (a, b) => {
+    if (!b) return a;
+    return gcd(b, a % b);
 };
