@@ -1,2 +1,2 @@
-# deskop-mp3-player
-electron music player
+# Music Tabs
+An Editor that assists in creating sheet music in Tab notation.
