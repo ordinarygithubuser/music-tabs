@@ -210,9 +210,12 @@
           .en, .de {
             text-align: center;
             font-size: 18px;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.1);
+            color: green;
+            font-weight: bold;
             width: 30px;
             position: relative;
+            top: 2px
           }
 
           .en {

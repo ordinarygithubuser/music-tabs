@@ -2,11 +2,23 @@ import { Util } from 'mva';
 import { getNoteFrequency } from '../constants';
 import * as Actions from '../actions/synth';
 
-const createTone = (context, note, string) => {
+const createTone = (context, note, type, string) => {
     if (!note) return null;
     const osc = context.createOscillator();
+    const gain = context.createGain();
+
     osc.frequency.value = getNoteFrequency(note, string);
-    osc.connect(context.destination);
+    gain.gain.value = 0.5;
+
+    if (type == 'E-Bass') {
+        const filter = context.createBiquadFilter();
+        osc.connect(filter);
+        filter.gain.value = 50;
+        filter.connect(gain);
+    } else {
+        osc.connect(gain);
+    }
+    gain.connect(context.destination);
     return osc;
 };
 
@@ -40,13 +52,14 @@ export default ({ init, on }) => {
             if (m.iid !== state.instrument.id) return memo;
 
             const strings = state.instrument.tune.tones.split(' ');
+            const type = state.instrument.type;
             const tones = [];
 
             Util.Range(0, m.notes[0].length).map(index => {
                 const bar = m.notes[0][index].bar;
                 const chord = strings.reduce((arr, string, sIndex) => {
                     const note = m.notes[sIndex][index];
-                    const tone = createTone(context, note, string);
+                    const tone = createTone(context, note, type, string);
                     return tone ? arr.concat([tone]) : arr;
                 }, []);
 
