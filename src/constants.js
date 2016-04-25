@@ -170,6 +170,12 @@ export const smBar = (b1, b2) => {
     return b1.en < b2.en * factor;
 };
 
+export const normalize = (bar, de) => {
+    const en = bar.en / (bar.de / de);
+    if (en % 1 == 0) return { en, de };
+    else return normalize(bar, de * 2);
+};
+
 const gcd = (a, b) => {
     if (!b) return a;
     return gcd(b, a % b);

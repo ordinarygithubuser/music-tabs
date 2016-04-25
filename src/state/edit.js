@@ -19,10 +19,11 @@ export default ({ init, on }) => {
 
         state.edit.copy.notes.map((string, sIndex) => {
             string.map(note => {
-                notes[sIndex][note.index] = Note(note);
+                const data = Object.assign({}, note);
+                notes[sIndex][note.index] = Note(data);
             });
         });
-        state.measure.notes = notes;
-        update(state);
+        measure.notes = notes;
+        update({ measure });
     });
 };
