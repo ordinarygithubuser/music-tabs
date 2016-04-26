@@ -21,8 +21,8 @@ const Input = (value, onAction) => {
 export default class Measure extends React.Component {
     render () {
         const { index, instrument, measures, measure, selected, edit } = this.props;
+        const active = selected && measure.id == selected.id ? 'active' : '';
         const strings = instrument.tune.tones.split(' ');
-        const active = measure == selected ? 'active' : '';
 
         const style = {
             width: 45 + (30 * measure.notes[0].length),

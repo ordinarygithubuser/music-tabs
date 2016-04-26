@@ -1,115 +1,131 @@
 import { Util } from 'mva';
-import { addBar, mulBar, smBar, eqBar, normalize } from '../constants';
 import * as Actions from '../actions/measure';
-import { Measure, Note, Bar } from './model';
+import { Measure, Note, Bar , BarOps } from './model';
 
-const insertMeasure = (state, pos) => {
-    const afterMeasures = state.measures.filter(m => {
-        return m.pos >= pos;
+const { add, sub, mul, eq, less, more, norm } = BarOps;
+
+const insertMeasure = (measures, measure) => {
+    const afterMeasures = measures.filter(m => {
+        return m.pos >= measure.pos;
     }).map(m => {
         m.pos = m.pos + 1;
         return m;
     });
 
-    return state.measures.slice(0, pos)
-        .concat([state.measure])
+    return measures.slice(0, measure.pos)
+        .concat([measure])
         .concat(afterMeasures);
 };
 
-export default ({ init, on }) => {
-    init('measures', []);
-    init('measure', null);
+const updateMeasure = (measures, measure) => {
+    return measures.map(m => {
+        return m.id == measure.id ? measure : m;
+    });
+};
 
-    on(Actions.Create, (data, state, update) => {
-        state.measure = Measure(data, state);
-        state.measures = insertMeasure(state, data.pos);
-        update(state);
+export default ({ load, persist, on }) => {
+    load('measures', []);
+    load('measure', null);
+
+    on(Actions.Select, measure => persist({ measure }));
+
+    on(Actions.Create, (data, { measures, instrument }) => {
+        const measure = Measure(data, measures.length, instrument);
+        persist({ measure, measures: insertMeasure(measures, measure) });
     });
 
-    on(Actions.Select, (measure, state, update) => {
-        update({ measure });
-    });
+    on(Actions.SetBar, (en, state) => {
+        const measure = state.measure;
+        const newBar = Bar(en, measure.bar.de);
 
-    on(Actions.SetBar, (en, state, update) => {
-        const newBar = Bar(en, state.measure.bar.de);
-
-        if (state.measure.bar.en > newBar.en) {
-            state.measure.notes = state.measure.notes.map(string => {
+        if (more(measure.bar, newBar)) {
+            measure.notes = measure.notes.map(string => {
                 let bar = Bar(0, newBar.de);
 
                 return string.filter(note => {
-                    bar = addBar(bar, note.bar);
-                    return smBar(bar, newBar) || eqBar(bar, newBar);
+                    bar = add(bar, note.bar);
+                    return less(bar, newBar) || eq(bar, newBar);
                 });
             });
-        } else {
-            const bar = Bar(newBar.en - state.measure.bar.en, newBar.de);
-            const index = state.measure.notes[0].length;
+        } else if (less(measure.bar, newBar)) {
+            const bar = sub(newBar, measure.bar);
+            const index = measure.notes[0].length;
 
-            state.measure.notes.map((_, string) => {
-                state.measure.notes[string][index] = Note({ string, index, bar });
+            measure.notes.map((_, string) => {
+                measure.notes[string][index] = Note({ string, index, bar });
             });
         }
-        state.measure.bar = newBar;
-        update(state);
+        measure.bar = newBar;
+        const measures = updateMeasure(state.measures, measure);
+        persist({ measures, measure });
     });
 
-    on(Actions.SetTempo, (tempo, state, update) => {
-        state.measure.tempo = tempo;
-        update(state);
+    on(Actions.SetTempo, (tempo, state) => {
+        const measure = Object.assign(state.measure, { tempo });
+        const measures = updateMeasure(state.measures, measure);
+        persist({ measure, measures });
     });
 
-    on(Actions.UpdateNote, ({ note, value }, state, update) => {
+    on(Actions.UpdateNote, ({ note, value }, state) => {
+        if (value === '') value = null;
         state.measure.notes[note.string][note.index].value = value;
-        update(state);
+        const measures = updateMeasure(state.measures, state.measure);
+        persist({ measure: state.measure, measures });
     });
 
-    on(Actions.SelectTrack, ({ measure, instrument }, state, update) => {
-        update({ measure, instrument });
+    on(Actions.SelectTrack, ({ measure, instrument }) => {
+        persist({ measure, instrument });
     });
 
-    on(Actions.JoinNote, ({ from, to }, state, update) => {
+    on(Actions.JoinNote, ({ from, to }, state) => {
+        const measure = state.measure;
         const joined = [];
 
-        state.measure.notes.map((string, sIndex) => {
-            const bar = addBar(string[from].bar, string[to].bar);
-            const temp = Object.assign({}, string[to]);
-            joined[sIndex] = Object.assign(temp, string[from]);
-            joined[sIndex].bar = normalize(bar, state.measure.bar.de);
+        measure.notes.map((string, sIndex) => {
+            const tmp = Object.assign({}, string[to]);
+            const bar = norm(add(tmp.bar, string[to].bar), measure.bar.de);
+            joined[sIndex] = Object.assign(tmp, string[from]);
+            joined[sIndex].bar = bar;
         });
 
-        state.measure.notes.map((string, sIndex) => {
+        measure.notes.map((string, sIndex) => {
+            const first =  string.slice(0, from);
+            const replace = [joined[sIndex]];
             const last = string.filter(note => note.index > to).map(note => {
                 note.index -= 1;
                 return note;
             });
-            state.measure.notes[sIndex] = string.slice(0, from)
-                .concat([joined[sIndex]]).concat(last);
+            measure.notes[sIndex] = first.concat(replace).concat(last);
         });
-        update(state);
+        const measures = updateMeasure(state.measures, measure);
+        persist({ measure, measures });
     });
 
-    on(Actions.SplitNote, ({ index }, state, update) => {
-        let clone = [];
+    on(Actions.SplitNote, ({ index }, state) => {
+        const measure = state.measure;
+        const clone = [];
 
-        state.measure.notes.map((string, sIndex) => {
+        measure.notes.map((string, sIndex) => {
             const note = Object.assign({}, string[index]);
             note.index += 1;
-            note.bar = mulBar(string[index].bar, { en: 1, de: 2 });
-            note.bar = normalize(note.bar, state.measure.bar.de);
+            note.bar = norm(mul(note.bar, Bar(1, 2)), measure.bar.de);
             clone[sIndex] = note;
         });
-        state.measure.notes.map((string, sIndex) => {
+
+        measure.notes.map((string, sIndex) => {
             const orig = string.filter(note => note.index == index)[0];
+            const first =  string.slice(0, index);
+            const insert = [orig, clone[sIndex]];
             const last = string.filter(note => note.index > index).map(note => {
                 note.index += 1;
                 return note;
             });
-            orig.bar = mulBar(orig.bar, { en: 1, de: 2 });
-            orig.bar = normalize(orig.bar, state.measure.bar.de);
-            state.measure.notes[sIndex] = string.slice(0, index)
-                .concat([orig, clone[sIndex]]).concat(last);
+
+            orig.bar = norm(mul(orig.bar, Bar(1, 2)), measure.bar.de);
+            measure.notes[sIndex] =first.concat(insert).concat(last);
         });
-        update(state);
+
+        const measures = updateMeasure(state.measures, measure);
+        persist({ measure, measures });
     });
 };

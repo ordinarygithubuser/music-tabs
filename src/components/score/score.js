@@ -17,7 +17,7 @@ class Sheet extends React.Component {
         if (this.props.measure != prevProps.measure) {
             const component = this.refs.active;
             const node = ReactDOM.findDOMNode(component);
-            if (node) node.scrollIntoView({ behavior: 'smooth' });
+            if (node) node.scrollIntoViewIfNeeded();
         }
     }
 
@@ -48,19 +48,11 @@ class Sheet extends React.Component {
     }
 }
 
-export default ({ project, instrument, measures, measure, edit }) => {
-    if (!project) return <noscript />;
+export default state => {
+    if (!state.project) return <noscript />;
 
     return <div className="score">
-        <Title
-            instrument={instrument}
-            project={project}
-        />
-        <Sheet
-            instrument={instrument}
-            measures={measures}
-            measure={measure}
-            edit={edit}
-        />
+        <Title {...state }/>
+        <Sheet {...state} />
     </div>
 };

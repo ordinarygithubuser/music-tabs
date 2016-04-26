@@ -1,5 +1,4 @@
 import { React, Util } from 'mva';
-import { smBar, addBar } from '../../constants';
 import { UpdateNote, CreateNote } from '../../actions/measure';
 
 export default ({ measure, string }) => {

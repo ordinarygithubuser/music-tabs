@@ -1,29 +1,22 @@
 import * as Actions from '../actions/instrument';
 import { Measure, Instrument } from './model';
 
-export default ({ init, on }) => {
-    init('instruments',[]);
-    init('instrument', null);
+export default ({ load, persist, on }) => {
+    load('instruments',[]);
+    load('instrument', null);
 
-    on(Actions.Create, (data, state, update) => {
-        state.instrument = Instrument(data, state);
-        state.instruments.push(state.instrument);
-        state.measure = Measure({ pos: 0 }, state);
-        state.measures.push(state.measure);
-        update(state);
+    on(Actions.Create, (data, state) => {
+        const instrument = Instrument(data, state.instruments.length, state.project.id);
+        const instruments = state.instruments.concat([instrument]);
+        const measure = Measure({ pos: 0 }, state.measures.length, instrument);
+        const measures = state.measures.concat([measure]);
+        persist({ instruments, instrument, measures, measure });
     });
 
-    on(Actions.Select, (instrument, state, update) => {
+    on(Actions.Select, (instrument, state) => {
         const index = state.measures.filter(m => m.iid == state.instrument.id).indexOf(state.measure);
         const measures = state.measures.filter(m => m.iid == instrument.id);
         const measure = measures[index] || measures[0];
-        update({ instrument, measure });
-    });
-
-    Actions.Create({
-        type: 'E-Bass',
-        name: 'Tony T.',
-        tune: { name: 'Standard', tones: 'E1 A1 D2 G2' },
-        pid: 1
+        persist({ instrument, measure });
     });
 };

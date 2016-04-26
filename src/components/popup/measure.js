@@ -1,5 +1,4 @@
-import { React } from 'mva';
-import Switch from '../switch';
+import { React, Switch } from 'mva';
 import { Create } from '../../actions/measure';
 
 const ITEMS = ['Before', 'After'];

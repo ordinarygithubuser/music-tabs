@@ -2,7 +2,7 @@ import { Util } from 'mva';
 import * as Actions from '../actions/edit';
 import { Note, createNotes } from './model';
 
-export default ({ init, on }) => {
+export default ({ init, persist, on }) => {
     init('edit', {
         copy: null
     });
@@ -12,7 +12,7 @@ export default ({ init, on }) => {
         update(state);
     });
 
-    on(Actions.Paste, (measure, state, update) => {
+    on(Actions.Paste, (measure, state) => {
         const strings = state.instrument.tune.tones.split(' ').length;
         const bars = state.edit.copy.notes[0].map(note => note.bar);
         const notes = createNotes(strings, bars);
@@ -24,6 +24,9 @@ export default ({ init, on }) => {
             });
         });
         measure.notes = notes;
-        update({ measure });
+        const measures = state.measures.map(m => {
+            return m.id == measure.id ? measure : m;
+        });
+        persist({ measure, measures });
     });
 };

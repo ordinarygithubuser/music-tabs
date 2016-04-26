@@ -13,7 +13,7 @@
   display: flex;
   min-height: 30px;
   max-height: 30px;
-  background: rgb(245, 245, 245);
+  background: $background_panel;
   -webkit-app-region: drag;
 
   .entry {
@@ -23,10 +23,28 @@
 
     .title {
       padding: 5px 9px;
+      font-size: 14px;
     }
 
     &.active {
-      background: rgb(230, 230, 230);
+      background: rgba(255, 255, 255, 0.75);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.75);
+
+        .title {
+          color: $font_normal;
+        }
+      }
+    }
+
+    &:hover {
+      cursor: pointer;
+      background: $background_blue;
+
+      .title {
+        color: white;
+      }
     }
 
     ul {
@@ -34,14 +52,24 @@
       z-index: 100;
       min-width: 110px;
       text-align: left;
-      background: rgb(230, 230, 230);
+      background: $background_panel;
+
+      li {
+        i, span {
+          font-size: 14px;
+        }
+        i {
+          width: 15px;
+          margin-right: 5px;
+        }
+      }
 
       .disabled, .disabled span, .disabled i {
         color: rgb(150, 150, 150);
         cursor: default;
 
         &:hover {
-          background:  rgb(230, 230, 230);
+          background: transparent;
         }
       }
     }
@@ -56,6 +84,7 @@
   .window-options {
     i.fa {
       -webkit-app-region: no-drag;
+      -webkit-transition: background 0.3s, border-color 0.3s;
       font-size: 12px;
       padding: 2px;
       width: 20px;
@@ -67,6 +96,7 @@
       margin-top: 5px;
       border-radius: 2px;
       box-shadow:  0 0 0 1px rgb(100, 100, 100);
+      background: rgba(255, 255, 255, 0.6);
 
       &.fa-minus {
         line-height: 25px;
@@ -85,6 +115,7 @@
       &:hover {
         cursor: pointer;
         color: $font_blue;
+        background: rgba(255, 255, 255, 1);
         box-shadow:  0 0 0 1px $background_blue;
       }
     }
@@ -328,8 +359,6 @@
 }
 
 .instrument-panel {
-  border-top: 1px solid $border_light;
-
   table {
     width: 100%;
     border-collapse: collapse;
@@ -370,7 +399,8 @@
       }
 
       th {
-        background: $background_light;
+        border-top: 1px solid #c8d7dc;
+        background: $background_panel;
       }
 
       .track {
@@ -413,4 +443,8 @@ input {
   height: 30px;
   margin-left: 5px;
   line-height: 30px;
+}
+
+.dev-options {
+  width: 500px;
 }

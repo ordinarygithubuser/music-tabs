@@ -4,6 +4,7 @@ import { React } from 'mva';
 import LoadProject from '../project/load';
 import CreateProject from '../project/create';
 import CreateInstrument from '../instrument/create';
+import DevOptions from '../menu/options';
 
 import * as SynthActions from '../../actions/synth';
 import { SetDialog } from '../../actions/flow';
@@ -81,7 +82,7 @@ export default class Menu extends React.Component {
         const PROJECT_ACTIONS = [
             {
                 name: 'Load',
-                icon: 'database',
+                icon: 'external-link',
                 method: () => SetDialog(LoadProject),
                 active: () => true
             }, {
@@ -125,6 +126,20 @@ export default class Menu extends React.Component {
             }
         ];
 
+        const OPTION_ACTIONS = [
+            {
+                name: 'Libraries',
+                icon: 'book',
+                method: () => {},
+                active: () => true
+            }, {
+                name: 'Data',
+                icon: 'database',
+                method: () => SetDialog(DevOptions),
+                active: () => true
+            }
+        ];
+
         return <div className="menu">
             <MenuEntry
                 name="Project"
@@ -143,6 +158,12 @@ export default class Menu extends React.Component {
                 active={active}
                 toggle={toggle}
                 actions={PLAYBACK_ACTIONS}
+            />
+            <MenuEntry
+                name="Options"
+                active={active}
+                toggle={toggle}
+                actions={OPTION_ACTIONS}
             />
             <i className="space" />
             <Window />
