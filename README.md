@@ -1,8 +1,7 @@
 # Music Tabs
 An Editor that assists in creating sheet music in Tab notation.
 
-![Music-Tabs Screenshot](/static/img/screenshot.png)
-Format: ![Music-Tabs Screenshot](url)
+![Music-Tabs Screenshot](https://github.com/ordinarygithubuser/music-tabs/blob/master/static/img/screenshsot.png)
 
 # FEATURES
 
