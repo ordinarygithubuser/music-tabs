@@ -1,37 +1,15 @@
-import remote from 'remote';
 import { React } from 'mva';
 
+import Window from './window';
 import LoadProject from '../project/load';
-import CreateProject from '../project/create';
-import CreateInstrument from '../instrument/create';
-import DevOptions from '../menu/options';
+import UpdateProject from '../project/update';
+import RemoveProject from '../project/remove';
+import UpdateInstrument from '../instrument/update';
+import RemoveInstrument from '../instrument/remove';
+import DataMenu from '../menu/data-menu';
 
 import * as SynthActions from '../../actions/synth';
 import { SetDialog } from '../../actions/flow';
-
-const Window = () => {
-    const max = () => remote.getCurrentWindow().maximize();
-    const min = () => remote.getCurrentWindow().minimize();
-    const close = () => remote.getCurrentWindow().close();
-
-    return <div className="window-options">
-        <i
-            className="fa fa-minus"
-            onClick={min}
-            title="Minimize Window"
-        />
-        <i
-            className="fa fa-plus"
-            onClick={max}
-            title="Maximize Window"
-        />
-        <i
-            className="fa fa-times close"
-            onClick={close}
-            title="Close Application"
-        />
-    </div>;
-};
 
 const MenuEntry = ({ name, active, actions, toggle }) => {
     const renderActions = () => {
@@ -81,33 +59,43 @@ export default class Menu extends React.Component {
 
         const PROJECT_ACTIONS = [
             {
-                name: 'Load',
+                name: 'Open',
                 icon: 'external-link',
                 method: () => SetDialog(LoadProject),
                 active: () => true
             }, {
-                name: 'Create',
+                name: 'New',
                 icon: 'plus-circle',
-                method: () => SetDialog(CreateProject),
+                method: () => SetDialog(UpdateProject('create')),
                 active: () => true
+            }, {
+                name: 'Edit',
+                icon: 'edit',
+                method: () => SetDialog(UpdateProject('edit')),
+                active: () => project
             }, {
                 name: 'Delete',
                 icon: 'trash-o',
-                method: () => {},
+                method: () => SetDialog(RemoveProject),
                 active: () => project
             }
         ];
 
         const INSTRUMENT_ACTIONS = [
             {
-                name: 'Create',
+                name: 'New',
                 icon: 'plus-circle',
-                method: () => SetDialog(CreateInstrument),
+                method: () => SetDialog(UpdateInstrument('create')),
                 active: () => project
+            },{
+                name: 'Edit',
+                icon: 'edit',
+                method: () => SetDialog(UpdateInstrument('edit')),
+                active: () => instrument
             }, {
                 name: 'Delete',
                 icon: 'trash-o',
-                method: () => {},
+                method: () => SetDialog(RemoveInstrument),
                 active: () => instrument
             }
         ];
@@ -135,7 +123,7 @@ export default class Menu extends React.Component {
             }, {
                 name: 'Data',
                 icon: 'database',
-                method: () => SetDialog(DevOptions),
+                method: () => SetDialog(DataMenu),
                 active: () => true
             }
         ];

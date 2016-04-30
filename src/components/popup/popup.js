@@ -3,13 +3,17 @@ import { React } from 'mva';
 export default class Popup extends React.Component {
     constructor (props) {
         super(props);
+        this.state = { pos: {} };
         this.close = this.close.bind(this);
     }
 
     componentDidMount () {
+        const pos = this.refs.popup.getBoundingClientRect();
+
         setTimeout(() => {
             document.addEventListener('click', this.close);
-        }, 100);
+        }, 20);
+        this.setState({ pos });
     }
 
     componentWillUnmount () {
@@ -29,7 +33,7 @@ export default class Popup extends React.Component {
 
         return <div className="popup-wrapper">
             <div className="popup" ref="popup" style={style}>
-                <Component {...data} close={close}/>
+                <Component {...data} pos={this.state.pos} close={close} />
             </div>
         </div>;
     }

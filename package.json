@@ -4,7 +4,7 @@
   "description": "An Editor for Music Tab Notation",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "./node_modules/.bin/electron .",
     "build": "webpack",
     "watch": "webpack-dev-server --hot --inline"
   },

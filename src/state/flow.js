@@ -1,6 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import * as Actions from '../actions/flow';
 
-export default ({ init, on }) => {
+export default ({ init, on, persist }) => {
     init('dialog', null);
     init('popup', null);
 
@@ -25,5 +27,32 @@ export default ({ init, on }) => {
         state.dialog = null;
 
         update(state);
+    });
+
+    on(Actions.Export, (name, state) => {
+        const { projects, instruments, measures, disk } = state;
+        const file = path.join(disk.dir, name);
+        const data = { projects, instruments, measures };
+        const content = JSON.stringify(data, null, 4);
+
+        fs.writeFile(file, content, err => {
+            if (err) console.log(err);
+        });
+    });
+
+    on(Actions.Import, (loaded, state) => {
+        const { dir, file } = state.disk;
+        fs.readFile(path.join(dir, file.name), 'utf-8', (err, content) => {
+            if (err) return console.log(err);
+
+            try {
+                const data = JSON.parse(content);
+                state = Object.assign(state, data);
+                persist(state);
+                loaded();
+            } catch (e) {
+                loaded('Invalid or corrupt file.');
+            }
+        });
     });
 };

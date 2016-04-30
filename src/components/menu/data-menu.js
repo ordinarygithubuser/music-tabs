@@ -1,6 +1,8 @@
 import { React, Accordion } from 'mva';
 
-import { ClearStorage } from '../../actions/flow';
+import ExportDialog from '../disk/export';
+import ImportDialog from '../disk/import';
+import { ClearStorage, SetDialog } from '../../actions/flow';
 
 const Clear = () => <div>
     <p>
@@ -15,7 +17,9 @@ const Export = () => <div>
     <p>
         Exports the current internal state as a JSON file.
     </p>
-    <button onClick={() => {}}>Export...</button>
+    <button onClick={() => SetDialog(ExportDialog)}>
+        Export
+    </button>
 </div>;
 
 const Import = () => <div>
@@ -23,7 +27,9 @@ const Import = () => <div>
         Imports a previously saved JSON backup. The current
         internal state will be cleared.
     </p>
-    <button onClick={() => {}}>Import...</button>
+    <button  onClick={() => SetDialog(ImportDialog)}>
+        Import
+    </button>
 </div>;
 
 const DevOptions = () => {
@@ -45,5 +51,5 @@ const DevOptions = () => {
 
 export default {
     Component: DevOptions,
-    title: 'Developer Options'
+    title: 'Data Options'
 }

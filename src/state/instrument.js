@@ -1,5 +1,15 @@
+import { Util } from 'mva';
 import * as Actions from '../actions/instrument';
-import { Measure, Instrument } from './model';
+import { Measure, Instrument, createString } from './model';
+
+const getMeasure = (state, instrument) => {
+    const measures = state.measures.filter(m => m.iid == instrument.id);
+    if (!state.instrument) return measures[0];
+    const index = state.measures.filter(m => {
+        return m.iid == state.instrument.id;
+    }).indexOf(state.measure);
+    return measures[index] || measures[0];
+};
 
 export default ({ load, persist, on }) => {
     load('instruments',[]);
@@ -13,10 +23,49 @@ export default ({ load, persist, on }) => {
         persist({ instruments, instrument, measures, measure });
     });
 
+    on(Actions.Update, (data, state) => {
+        const instrument = state.instrument;
+        const strings = data.tune.tones.split(' ').length;
+        const measures = state.measures.map(m => {
+            if (m.iid != instrument.id) return m;
+            if (strings < m.notes.length) {
+                m.notes = m.notes.slice(0, strings);
+            } else {
+                const bars = m.notes[0].map(n => n.bar);
+                Util.Range(m.notes.length, strings).map(string => {
+                    m.notes[string] = createString(string, bars);
+                });
+            }
+            return m;
+        });
+
+        Object.keys(data).map(key => {
+            if (instrument[key]) instrument[key] = data[key];
+        });
+
+        const instruments = state.instruments.map(i => {
+            return i.id == instrument.id ? instrument : i;
+        });
+        persist({ instruments, instrument, measures });
+    });
+
+    on(Actions.Remove, (_, state) => {
+        const measures = state.measures.filter(m => {
+            return m.iid !== state.instrument.id;
+        });
+        const instruments = state.instruments.filter(i => {
+            return i.id != state.instrument.id;
+        });
+        persist({
+            instruments,
+            instrument: instruments[0],
+            measures,
+            measure: null
+        });
+    });
+
     on(Actions.Select, (instrument, state) => {
-        const index = state.measures.filter(m => m.iid == state.instrument.id).indexOf(state.measure);
-        const measures = state.measures.filter(m => m.iid == instrument.id);
-        const measure = measures[index] || measures[0];
+        const measure = getMeasure(state, instrument);
         persist({ instrument, measure });
     });
 };

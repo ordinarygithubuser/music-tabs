@@ -1,13 +1,18 @@
 import { Util } from 'mva';
 
+export const createString = (stringIndex, bars) => {
+    const string = [];
+    bars.map((bar, index) => {
+        string.push(Note({
+            string: stringIndex, index, bar, value: null
+        }));
+    });
+    return string;
+};
+
 export const createNotes = (strings, bars) => {
     return Util.Range(0, strings).reduce((memo, string) => {
-        memo[string] = [];
-        bars.map((bar, index) => {
-            memo[string][index] = Note({
-                string, index, bar: bar, value: null
-            });
-        });
+        memo[string] = createString(string, bars);
         return memo;
     }, []);
 };

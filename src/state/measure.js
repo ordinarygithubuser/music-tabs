@@ -83,7 +83,7 @@ export default ({ load, persist, on }) => {
 
         measure.notes.map((string, sIndex) => {
             const tmp = Object.assign({}, string[to]);
-            const bar = norm(add(tmp.bar, string[to].bar), measure.bar.de);
+            const bar = norm(add(tmp.bar, string[from].bar), measure.bar.de);
             joined[sIndex] = Object.assign(tmp, string[from]);
             joined[sIndex].bar = bar;
         });

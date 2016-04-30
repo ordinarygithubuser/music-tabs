@@ -24,6 +24,7 @@ export default ({ init, persist, on }) => {
             });
         });
         measure.notes = notes;
+        measure.bar = state.edit.copy.bar;
         const measures = state.measures.map(m => {
             return m.id == measure.id ? measure : m;
         });
