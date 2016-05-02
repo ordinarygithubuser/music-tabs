@@ -7,6 +7,7 @@ export const SelectTrack = Action();
 
 export const SetTempo = Action();
 export const SetBar = Action ();
+export const SetNote = Action();
 export const CreateNote = Action();
 export const UpdateNote = Action();
 

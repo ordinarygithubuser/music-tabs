@@ -6,6 +6,7 @@ import UpdateProject from '../project/update';
 import RemoveProject from '../project/remove';
 import UpdateInstrument from '../instrument/update';
 import RemoveInstrument from '../instrument/remove';
+import InstrumentConf from '../instrument/conf';
 import DataMenu from '../menu/data-menu';
 
 import * as SynthActions from '../../actions/synth';
@@ -44,13 +45,26 @@ const MenuEntry = ({ name, active, actions, toggle }) => {
 export default class Menu extends React.Component {
     constructor (props) {
         super(props);
-        this.state = {
-            active: null
-        }
+        this.state = { active: null };
+        this.checkFocus = this.checkFocus.bind(this);
     };
 
+    componentDidMount () {
+        document.addEventListener('click', this.checkFocus);
+    }
+
+    componentWillUnmount () {
+        document.removeEventListener('click', this.checkFocus);
+    }
+
+    checkFocus (e) {
+        if (!this.refs.menu.contains(e.target)) {
+            this.setState({ active: null });
+        }
+    }
+
     render () {
-        const { project, instrument } = this.props;
+        const { project, instrument, synth } = this.props;
         const { active } = this.state;
         const toggle = item => {
             if (item == active) item = null;
@@ -87,10 +101,15 @@ export default class Menu extends React.Component {
                 icon: 'plus-circle',
                 method: () => SetDialog(UpdateInstrument('create')),
                 active: () => project
-            },{
+            }, {
                 name: 'Edit',
                 icon: 'edit',
                 method: () => SetDialog(UpdateInstrument('edit')),
+                active: () => instrument
+            }, {
+                name: 'Effects',
+                icon: 'cog',
+                method: () => SetDialog(InstrumentConf),
                 active: () => instrument
             }, {
                 name: 'Delete',
@@ -110,7 +129,7 @@ export default class Menu extends React.Component {
                 name: 'Stop',
                 icon: 'stop',
                 method: SynthActions.Stop,
-                active: () => instrument
+                active: () => synth.playing
             }
         ];
 
@@ -128,7 +147,7 @@ export default class Menu extends React.Component {
             }
         ];
 
-        return <div className="menu">
+        return <div className="menu" ref="menu">
             <MenuEntry
                 name="Project"
                 active={active}

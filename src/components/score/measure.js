@@ -19,8 +19,19 @@ const Input = (value, onAction) => {
 };
 
 export default class Measure extends React.Component {
+    constructor (props) {
+        super(props);
+        this.state = { measure: props.selected };
+    }
+
+    // Fat Boost
+    shouldComponentUpdate (nextProps) {
+        const { measure, selected } = this.props;
+        return !measure || !selected || nextProps.selected.id == measure.id || selected.id == measure.id;
+    }
+
     render () {
-        const { index, instrument, measures, measure, selected, edit } = this.props;
+        const { instrument, measures, measure, selected, edit, note, synth } = this.props;
         const active = selected && measure.id == selected.id ? 'active' : '';
         const strings = instrument.tune.tones.split(' ');
 
@@ -32,14 +43,15 @@ export default class Measure extends React.Component {
         const elements = Util.Range(0, strings.length).map(string => {
             return <String
                 key={string}
+                note={note}
                 string={string}
                 measure={measure}
+                selected={selected}
+                synth={synth}
             />;
         });
 
-        const select = () => {
-            if (measure != selected) Actions.Select(measure);
-        };
+        const select = () => Actions.Select(measure);
 
         const showTempoPopup = event => {
             const x = event.clientX, y = event.clientY;
@@ -54,7 +66,7 @@ export default class Measure extends React.Component {
                 measure={measure}
             />
             <div className="head">
-                <div className="index">{index}</div>
+                <div className="index">{measure.index + 1}</div>
             </div>
             <div className="body">
                 <Bar

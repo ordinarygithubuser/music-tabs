@@ -5,16 +5,14 @@ import { Measure, Note, Bar , BarOps } from './model';
 const { add, sub, mul, eq, less, more, norm } = BarOps;
 
 const insertMeasure = (measures, measure) => {
-    const afterMeasures = measures.filter(m => {
-        return m.pos >= measure.pos;
-    }).map(m => {
-        m.pos = m.pos + 1;
+    measures = measures.map(m => {
+        if (m.iid == measure.iid && m.index >= measure.index) {
+            m.index = m.index + 1;
+        }
         return m;
     });
-
-    return measures.slice(0, measure.pos)
-        .concat([measure])
-        .concat(afterMeasures);
+    measures.push(measure);
+    return measures;
 };
 
 const updateMeasure = (measures, measure) => {
@@ -23,14 +21,15 @@ const updateMeasure = (measures, measure) => {
     });
 };
 
-export default ({ load, persist, on }) => {
+export default ({ init, load, persist, on }) => {
     load('measures', []);
     load('measure', null);
+    init('note', {});
 
     on(Actions.Select, measure => persist({ measure }));
 
-    on(Actions.Create, (data, { measures, instrument }) => {
-        const measure = Measure(data, measures.length, instrument);
+    on(Actions.Create, (index, { measures, instrument }) => {
+        const measure = Measure({ index }, measures.length, instrument);
         persist({ measure, measures: insertMeasure(measures, measure) });
     });
 
@@ -64,6 +63,28 @@ export default ({ load, persist, on }) => {
         const measure = Object.assign(state.measure, { tempo });
         const measures = updateMeasure(state.measures, measure);
         persist({ measure, measures });
+    });
+
+    on(Actions.SetNote, ({ measure, string, index }, state, update) => {
+        const strings = measure.notes.length;
+        const notes = measure.notes[0].length;
+
+        if (measure) {
+            state.measure = measure;
+        }
+
+        if (index > -1 && index < notes) {
+            state.note.index = index;
+        } else if (index == -1) {
+
+        } else if (index == notes) {
+
+        }
+
+        if (string > -1 && string < strings) {
+            state.note.string = string;
+        }
+        update(state);
     });
 
     on(Actions.UpdateNote, ({ note, value }, state) => {

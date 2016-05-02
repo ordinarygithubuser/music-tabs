@@ -241,6 +241,12 @@ ul {
   input, .combo-box {
     min-width: 250px;
   }
+
+  input.double {
+    min-width: 60px;
+    max-width: 60px;
+    text-align: right;
+  }
 }
 
 .buttons {

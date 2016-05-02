@@ -14,9 +14,9 @@ export default class MeasurePopup extends React.Component {
 
         const create = () => {
             if (this.state.selected == ITEMS[0]) {
-                Create({ pos: this.props.index });
+                Create(this.props.measure.index);
             } else {
-                Create({ pos: this.props.index + 1 });
+                Create(this.props.measure.index + 1);
             }
             this.props.close();
         };

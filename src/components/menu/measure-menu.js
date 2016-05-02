@@ -5,11 +5,10 @@ import LoopPopup from '../popup/loop';
 import * as EditActions from '../../actions/edit';
 import { SetPopup } from '../../actions/flow';
 
-export default ({ measures, measure, edit }) => {
+export default ({ measure, edit }) => {
     const create = event => {
         const x = event.clientX, y = event.clientY;
-        const index = measures.indexOf(measure);
-        SetPopup({ Component: MeasurePopup, data: { x, y, index } });
+        SetPopup({ Component: MeasurePopup, data: { x, y, measure } });
     };
 
     const loop = event => {

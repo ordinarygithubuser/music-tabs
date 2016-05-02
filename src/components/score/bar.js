@@ -3,7 +3,7 @@ import BarPopup from '../popup/bar';
 import { SetBar } from '../../actions/measure';
 import { SetPopup } from '../../actions/flow';
 
-export default ({ measure, strings }) => {
+export default ({ measure, strings, enabled }) => {
     const height = (strings.length) * 26;
     const style = { height };
     const enPos = { top: ((height + 52) / 2) * -1 };
@@ -15,6 +15,8 @@ export default ({ measure, strings }) => {
     });
 
     const showBarPopup = event => {
+        if (!enabled) return;
+
         const x = event.clientX, y = event.clientY;
         const data = { en, de, x, y, update: SetBar };
         SetPopup({ Component: BarPopup, data });

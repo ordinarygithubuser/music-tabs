@@ -6,6 +6,11 @@ export default class NoteBar extends React.Component {
     render () {
         const { index, last, pos, close } = this.props;
 
+        const getSplitCount = () => {
+            if (index == 0 || last == index) return 1;
+            return 2;
+        };
+
         const joinLeft = () => {
             JoinNote({ from: index - 1, to: index });
             close();
@@ -23,25 +28,23 @@ export default class NoteBar extends React.Component {
 
         const JoinLeft = () => {
             if (index == 0) return <noscript />;
-            return <li><i
-                className="fa fa-chevron-circle-left"
-                onClick={joinLeft}
-            /></li>;
+            return <li onClick={joinLeft}>
+                <i className="fa fa-chevron-circle-left" />
+            </li>;
         };
 
         const JoinRight = () => {
             if (last == index) return <noscript />;
-            return <li><i
-                className="fa fa-chevron-circle-right"
-                onClick={joinRight}
-            /></li>;
+            return <li onClick={joinRight}>
+                <i className="fa fa-chevron-circle-right" />
+            </li>;
         };
 
-        const getStyle = (ref, reverse) => {
+        const getStyle = (ref, reverse, itemCount) => {
             const style = { left: pos.width ? pos.width : 0 };
 
             if (pos.width && index >= last / 2) {
-                style.left = -72;
+                style.left = -36 * itemCount;
                 style.borderRadius = 4;
                 style.borderTopRightRadius = 0;
                 style.borderBottomRightRadius = 0;
@@ -55,14 +58,14 @@ export default class NoteBar extends React.Component {
         return <ul className="note-bar-options">
             <li>
                 <div className="name">Split</div>
-                <ul className="split" ref="split" style={getStyle(true)}>
+                <ul className="split" ref="split" style={getStyle('split', true, 2)}>
                     <li onClick={splitTwo}><span className="num">2</span></li>
                     <li ><span className="num" >3</span></li>
                 </ul>
             </li>
             <li>
                 <div className="name">Join</div>
-                <ul className="join" ref="join" style={getStyle()}>
+                <ul className="join" ref="join" style={getStyle('join', false, getSplitCount())}>
                     <JoinLeft />
                     <JoinRight />
                 </ul>

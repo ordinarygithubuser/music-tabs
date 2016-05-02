@@ -18,7 +18,7 @@ export default ({ load, persist, on }) => {
     on(Actions.Create, (data, state) => {
         const instrument = Instrument(data, state.instruments.length, state.project.id);
         const instruments = state.instruments.concat([instrument]);
-        const measure = Measure({ pos: 0 }, state.measures.length, instrument);
+        const measure = Measure({ index: 0 }, state.measures.length, instrument);
         const measures = state.measures.concat([measure]);
         persist({ instruments, instrument, measures, measure });
     });
@@ -67,5 +67,35 @@ export default ({ load, persist, on }) => {
     on(Actions.Select, (instrument, state) => {
         const measure = getMeasure(state, instrument);
         persist({ instrument, measure });
+    });
+
+    on(Actions.SetAttributes, (conf, { instrument, instruments }) => {
+        instrument.conf = conf;
+        instruments = instruments.map(i => {
+            return i.id == instrument.id ? instrument : i;
+        });
+        persist({ instruments, instrument });
+    });
+
+    on(Actions.Mute, (instrument, state) => {
+        const instruments = state.instruments.map(i => {
+            if (i.id == instrument.id) {
+                i.conf.mute = !i.conf.mute;
+            }
+            return i;
+        });
+        persist({ instruments });
+    });
+
+    on(Actions.Solo, (instrument, state) => {
+        const instruments = state.instruments.map(i => {
+            if (i.id == instrument.id) {
+                i.conf.solo = !i.conf.solo;
+            } else {
+                i.conf.solo = false;
+            }
+            return i;
+        });
+        persist({ instruments });
     });
 };

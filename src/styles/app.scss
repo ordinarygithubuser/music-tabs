@@ -166,7 +166,7 @@
       flex-flow: column nowrap;
       margin-bottom: 10px;
 
-      &.active .body /*.strings*/ {
+      &.active .body {
         background: $background_measure;
       }
 
@@ -291,6 +291,7 @@
               margin-top: 13px;
               width: 30px;
               height: 26px;
+              padding: 0;
               border: none;
               background: none;
               text-align: center;
@@ -301,6 +302,10 @@
 
               &:hover {
                 box-shadow: 0 0 2px $font_blue;
+              }
+
+              &.active {
+                color: red;
               }
 
               &:first-of-type {
@@ -398,19 +403,28 @@
         text-overflow: ellipsis;
         white-space: nowrap;
 
-        &:nth-child(1) {
-          width: 140px;
-        }
+        &:nth-child(1), &:nth-child(2) {
+          width: 40px;
 
-        &:nth-child(2) {
-          width: 140px;
+          button {
+            max-width: 30px;
+            min-width: 30px;
+          }
         }
 
         &:nth-child(3) {
-          width: 140px;
+          width: 80px;
         }
 
         &:nth-child(4) {
+          width: 140px;
+        }
+
+        &:nth-child(5) {
+          width: 100px;
+        }
+
+        &:nth-child(6) {
           display: flex;
           flex-grow: 1;
         }
@@ -485,6 +499,8 @@ input {
         padding-left: 8px;
         padding-right: 8px;
         flex-flow: row nowrap;
+        align-items: flex-end;
+        justify-content: flex-end;
 
         &:hover {
           .num {

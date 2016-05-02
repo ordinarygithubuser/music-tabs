@@ -22,7 +22,7 @@ class Sheet extends React.Component {
     }
 
     render () {
-        const { instrument, measures, measure, edit } = this.props;
+        const { instrument, measures, measure, edit, synth, note } = this.props;
         if (!instrument) return <noscript />;
 
         const getRef = m => {
@@ -31,11 +31,14 @@ class Sheet extends React.Component {
 
         const elements = measures.filter(m => {
             return m.iid == instrument.id;
-        }).map((m, i) => <Measure
-            key={i}
+        }).sort((a, b) => {
+            return a.index - b.index;
+        }).map(m => <Measure
+            key={m.id}
             ref={getRef(m)}
             edit={edit}
-            index={i}
+            note={note}
+            synth={synth}
             measure={m}
             selected={measure}
             measures={measures}

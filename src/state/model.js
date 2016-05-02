@@ -44,7 +44,10 @@ export const Instrument = (data, instrumentCount, projectId) => {
     return Object.assign(data, {
         id: instrumentCount,
         pid: projectId,
-        measures: []
+        measures: [],
+        conf: {
+            gain: 0.2
+        }
     });
 };
 
