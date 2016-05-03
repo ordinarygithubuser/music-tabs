@@ -1,11 +1,21 @@
 import { React, ReactDOM } from 'mva';
 
 import Measure from './measure';
+import NoteMenu from '../menu/note-menu';
+import MeasureMenu from '../menu/measure-menu';
 
 const Title = ({ project, instrument }) => {
     const pName = project ? project.name : '';
     const iName = instrument && instrument.tune ? ' - ' + instrument.name : '';
     return <h2>{pName + iName}</h2>;
+};
+
+const Menu = ({ measure, note, edit }) => {
+    return <div className="score-menu">
+        <MeasureMenu edit={edit} measure={measure} />
+        <div className="sep"> </div>
+        <NoteMenu measure={measure} note={note} />
+    </div>;
 };
 
 class Sheet extends React.Component {
@@ -22,7 +32,7 @@ class Sheet extends React.Component {
     }
 
     render () {
-        const { instrument, measures, measure, edit, synth, note } = this.props;
+        const { instrument, measures, measure, synth, note } = this.props;
         if (!instrument) return <noscript />;
 
         const getRef = m => {
@@ -36,12 +46,10 @@ class Sheet extends React.Component {
         }).map(m => <Measure
             key={m.id}
             ref={getRef(m)}
-            edit={edit}
             note={note}
             synth={synth}
             measure={m}
             selected={measure}
-            measures={measures}
             instrument={instrument}
         />);
 
@@ -56,6 +64,7 @@ export default state => {
 
     return <div className="score">
         <Title {...state }/>
+        <Menu {...state} />
         <Sheet {...state} />
     </div>
 };

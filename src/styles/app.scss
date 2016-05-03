@@ -151,8 +151,70 @@
   h2 {
     font-size: 20px;
     padding: 5px 0;
-    margin: 0 0 20px;
+    margin: 0 0 5px;
     color: $font_blue;
+  }
+
+  .score-menu {
+    min-height: 40px;
+    max-height: 40px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    border-bottom: 1px solid $border_light;
+
+    .options {
+      display: flex;
+      min-height: 40px;
+      max-height: 40px;
+      margin-right: 10px;
+
+      i {
+        font-size: 13px;
+        height: 28px;
+        width: 28px;
+        margin-right: 5px;
+        margin-top: 5px;
+        padding-top: 6px;
+        text-align: center;
+        border-radius: 20px;
+        color: $font_active;
+        border: 2px solid $font_active;
+
+        &:hover {
+          cursor: pointer;
+          color: $font_blue;
+          border-color: $font_blue;
+        }
+
+        &.disabled {
+          opacity: 0.5;
+        }
+
+        &.disabled:hover {
+          cursor: default;
+          color: $font_active;
+          border-color: $font_active;
+        }
+
+        &.fa-tachometer {
+          padding-top: 5px;
+        }
+      }
+    }
+
+    .space {
+      min-width: 10px;
+      max-width: 10px;
+    }
+
+    .sep {
+      border-right: 1px solid $border_light;
+      height: 10px;
+      margin-top: 30px;
+      margin-right: 15px;
+    }
   }
 
   .sheet {
@@ -168,46 +230,6 @@
 
       &.active .body {
         background: $background_measure;
-      }
-
-      .options {
-        opacity: 0;
-        margin-left: 30px;
-        flex-grow: 1;
-        align-items: center;
-        justify-content: center;
-        display: flex;
-        min-height: 25px;
-        max-height: 25px;
-
-        button {
-          font-size: 13px;
-          height: 25px;
-          min-width: 40px;
-          margin-right: 5px;
-          padding: 2px 9px;
-
-          i {
-            font-size: 13px;
-          }
-
-          &:last-of-type {
-            margin-right: 0;
-          }
-
-          &.disabled:hover {
-            cursor: default;
-
-            i {
-              color: #191919;
-              opacity: 0.7;
-            }
-          }
-        }
-      }
-
-      &:hover .options {
-        opacity: 1;
       }
 
       .head {
@@ -253,6 +275,7 @@
           }
 
           .en, .de {
+            cursor: default;
             text-align: center;
             font-size: 18px;
             background: rgba(255, 255, 255, 0.1);
@@ -327,11 +350,6 @@
           line-height: 30px;
           text-align: center;
           margin-right: 5px;
-
-          &:hover {
-            color: $font_blue;
-            cursor: pointer;
-          }
         }
 
         .bars {
@@ -347,15 +365,8 @@
             width: 30px;
             text-align: center;
 
-            &:hover {
-              cursor: pointer;
-
-              .en, .de {
-                color: $font_blue;
-              }
-            }
-
             .en, .de {
+              cursor: default;
               height: 15px;
               width: 30px;
               font-size: 10px;
